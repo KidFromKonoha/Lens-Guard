@@ -1,75 +1,80 @@
 /* ==========================================================================
    LensGuard — Design Tokens & Base Primitives
-   Warm Editorial / Archival Security Theme (Yellowish Off-White & Stone)
-   Anti-Slop Craft: No purple gradients, high contrast, clean hierarchy.
+   Bold Warm Light Theme — Visible, High-Contrast, Energetic
    ========================================================================== */
 
 :root {
   color-scheme: light;
 
   /* Surfaces (Warm yellowish off-white / Editorial Paper palette) */
-  --bg: #FAF7F0;             /* Warm alabaster / yellowish off-white */
-  --sidebar: #F2EBE0;        /* Warm stone archival sidebar */
-  --surface: #FFFFFF;        /* Crisp white primary card surface */
-  --surface-raised: #F8F4EC; /* Subtle raised surface for cards & headers */
-  --surface-2: #EBE3D5;      /* Secondary pills, badges, interactive elements */
-  --surface-inset: #F3ECE0;  /* Sunken code blocks, inputs, gutters */
-  --glass: rgba(250, 247, 240, 0.94);
-  --glass-strong: rgba(242, 235, 224, 0.98);
+  --bg: #FAF8F3;
+  --sidebar: #F0EAE0;
+  --surface: #FFFFFF;
+  --surface-raised: #FBF8F3;
+  --surface-2: #EEE6D6;
+  --surface-inset: #F4EEE3;
+  --glass: rgba(250, 248, 243, 0.96);
+  --glass-strong: rgba(240, 234, 224, 0.99);
 
-  /* Hover & Active tints for light theme */
-  --hover-tint: rgba(60, 50, 40, 0.04);
-  --active-tint: rgba(60, 50, 40, 0.08);
+  /* Hover & Active tints */
+  --hover-tint: rgba(60, 50, 40, 0.05);
+  --active-tint: rgba(60, 50, 40, 0.10);
 
-  /* Borders (Warm stone hairline borders) */
-  --border: #E2DACD;
-  --border-strong: #CFC3AF;
+  /* Borders — stronger & more visible */
+  --border: #D8CFC0;
+  --border-strong: #BFB3A0;
   --border-focus: #1C1917;
 
-  /* Type (Stone Charcoal & Ink - high contrast & readability) */
-  --text: #1C1917;           /* Stone 900 */
-  --text-secondary: #57534E; /* Stone 600 */
-  --text-muted: #78716C;     /* Stone 500 */
-  --text-faint: #A8A29E;     /* Stone 400 */
+  /* Type — maximum contrast, NO muted secondary */
+  --text: #18110A;
+  --text-secondary: #3D3028;
+  --text-muted: #6B5E52;
+  --text-faint: #9A8A7E;
 
-  /* Accent: Authoritative Slate Ink (Anti-slop: replacing generic AI purple) */
-  --accent: #18181B;
-  --accent-hover: #27272A;
-  --accent-soft: #EFE6D6;
-  --accent-border: #CFC0A9;
-  --accent-text: #18181B;
+  /* Accent: Authoritative deep amber-ink */
+  --accent: #18110A;
+  --accent-hover: #2D2318;
+  --accent-soft: #F0E8D6;
+  --accent-border: #C8B89A;
+  --accent-text: #18110A;
 
-  /* Semantic Security States (Rich, non-neon jewel tones with warm soft backings) */
-  --critical: #DC2626;
-  --critical-soft: #FEF2F2;
-  --critical-border: #FECACA;
+  /* Semantic Security States */
+  --critical: #C81E1E;
+  --critical-soft: #FEF0F0;
+  --critical-border: #F9A8A8;
 
-  --high: #EA580C;
-  --high-soft: #FFF7ED;
-  --high-border: #FED7AA;
+  --high: #C2560C;
+  --high-soft: #FFF5ED;
+  --high-border: #F9C49A;
 
-  --medium: #D97706;
-  --medium-soft: #FFFBEB;
-  --medium-border: #FDE68A;
+  --medium: #B45309;
+  --medium-soft: #FFF9EB;
+  --medium-border: #F8D97A;
 
-  --low: #65A30D;
-  --low-soft: #F7FEE7;
-  --low-border: #D9F99D;
+  --low: #4D7C0F;
+  --low-soft: #F3FEDF;
+  --low-border: #C8F09E;
 
-  --safe: #059669;
-  --safe-soft: #ECFDF5;
-  --safe-border: #A7F3D0;
+  --safe: #047857;
+  --safe-soft: #E8FCF4;
+  --safe-border: #86EFCB;
 
-  --unknown: #52525B;
-  --unknown-soft: #F4F4F5;
+  --unknown: #44403C;
+  --unknown-soft: #F4F2F0;
 
-  /* Geometry */
-  --radius-xs: 4px;
-  --radius-control: 6px;
-  --radius-panel: 9px;
-  --radius-large: 12px;
-  --sidebar-width: 236px;
-  --topbar-height: 52px;
+  /* Dynamic gradient colors (used by Granim.js canvas) */
+  --grad-a1: #FAF0DC;
+  --grad-a2: #F5E6C4;
+  --grad-b1: #F0E8DC;
+  --grad-b2: #E8DACB;
+
+  /* Geometry — larger radii for modern feel */
+  --radius-xs: 5px;
+  --radius-control: 8px;
+  --radius-panel: 14px;
+  --radius-large: 18px;
+  --sidebar-width: 248px;
+  --topbar-height: 56px;
   --content-max: 1560px;
 
   /* Spacing */
@@ -85,18 +90,19 @@
   --s-10: 64px;
 
   /* Type stacks */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Elevation (Clean, tight architectural hairline shadows) */
-  --shadow-sm: 0 1px 2px rgba(44, 38, 28, 0.05);
-  --shadow-panel: 0 1px 3px rgba(44, 38, 28, 0.06), 0 4px 12px rgba(44, 38, 28, 0.04);
-  --shadow-float: 0 10px 24px rgba(44, 38, 28, 0.09), 0 2px 6px rgba(44, 38, 28, 0.04);
+  /* Elevation — more pronounced */
+  --shadow-sm: 0 1px 3px rgba(44, 28, 10, 0.08), 0 1px 2px rgba(44, 28, 10, 0.06);
+  --shadow-panel: 0 2px 6px rgba(44, 28, 10, 0.08), 0 6px 20px rgba(44, 28, 10, 0.06);
+  --shadow-float: 0 12px 32px rgba(44, 28, 10, 0.12), 0 3px 8px rgba(44, 28, 10, 0.06);
+  --shadow-card: 0 2px 8px rgba(44, 28, 10, 0.07), 0 0 0 1.5px rgba(44, 28, 10, 0.06);
 
   /* Motion */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --fast: 120ms;
-  --normal: 180ms;
+  --normal: 200ms;
 
   /* Severity runtime variables (set by JS) */
   --sev-color: var(--text-muted);
@@ -120,35 +126,37 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 1.55;
-  letter-spacing: -0.006em;
+  font-size: 15px;         /* ↑ was 13px */
+  line-height: 1.6;
+  letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-::selection {
-  background: #E8DFC8;
-  color: #1C1917;
+/* Dynamic gradient background canvas */
+#granim-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
 }
 
-h1,
-h2,
-h3,
-p,
-dl,
-dd,
-figure {
+::selection {
+  background: #EDDF9A;
+  color: #18110A;
+}
+
+h1, h2, h3, p, dl, dd, figure {
   margin: 0;
 }
 
-button,
-input,
-textarea,
-select {
+button, input, textarea, select {
   font: inherit;
   color: inherit;
 }
@@ -165,8 +173,7 @@ a {
   color: inherit;
 }
 
-img,
-svg {
+img, svg {
   display: block;
 }
 
@@ -174,13 +181,12 @@ svg {
   display: none !important;
 }
 
-/* Accessible keyboard focus everywhere, without a permanent ring. */
 :focus {
   outline: none;
 }
 
 :focus-visible {
-  outline: 2px solid var(--border-focus);
+  outline: 2.5px solid var(--border-focus);
   outline-offset: 2px;
 }
 
@@ -189,15 +195,14 @@ svg {
   opacity: 1;
 }
 
-/* Thin technical scrollbars. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #D3C7B5 transparent;
+  scrollbar-color: #C8BBAA transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-track {
@@ -205,60 +210,40 @@ svg {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #D3C7B5;
+  background: #C8BBAA;
   border: 2px solid transparent;
-  border-radius: 6px;
   background-clip: padding-box;
+  border-radius: 99px;
 }
 
-*::-webkit-scrollbar-thumb:hover {
-  background: #BFAF9B;
-  background-clip: padding-box;
-  border: 2px solid transparent;
-}
-
+/* Utility */
 .sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 .mono {
   font-family: var(--font-mono);
-  font-variant-ligatures: none;
+  font-size: 0.88em;
 }
 
 .muted {
   color: var(--text-muted);
 }
 
-.secondary {
-  color: var(--text-secondary);
-}
-
-.eyebrow {
-  color: var(--text-muted);
+code {
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  font-size: 0.85em;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--text-secondary);
 }

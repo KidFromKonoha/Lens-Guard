@@ -66,9 +66,9 @@
 .brand-name {
   overflow: hidden;
   color: var(--text);
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -376,18 +376,18 @@
 
 .page-title {
   color: var(--text);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 
 .page-description {
   max-width: 650px;
-  margin-top: 8px;
+  margin-top: 10px;
   color: var(--text-secondary);
-  font-size: 12.5px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.65;
 }
 
 .header-actions {
@@ -433,9 +433,9 @@
 .scan-panel {
   overflow: hidden;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-panel);
 }
 
 .scan-panel-head {
@@ -790,10 +790,10 @@
 }
 
 .section-heading {
-  color: var(--text-secondary);
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .section-kicker {
@@ -810,11 +810,12 @@
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr);
   gap: 22px;
   overflow: hidden;
-  padding: 18px 20px 16px;
+  padding: 24px 28px 22px;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--sev-color);
+  border: 2px solid var(--border);
+  border-left: 5px solid var(--sev-color);
   border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
 }
 
 .verdict-main {
@@ -827,8 +828,8 @@
   gap: 8px;
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.11em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -849,15 +850,16 @@
 .verdict-label {
   color: var(--sev-color);
   font-family: var(--font-mono);
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1.0;
 }
 
 .verdict-human {
   color: var(--text-secondary);
-  font-size: 11.5px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .verdict-score {
@@ -867,8 +869,8 @@
   margin-left: 4px;
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .verdict-score small {
@@ -879,10 +881,10 @@
 
 .verdict-description {
   max-width: 520px;
-  margin-top: 7px;
+  margin-top: 10px;
   color: var(--text-secondary);
-  font-size: 11.5px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .verdict-meta {
@@ -899,18 +901,19 @@
 }
 
 .meta-label {
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 8.5px;
-  letter-spacing: 0.07em;
+  font-size: 10px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .meta-value {
   overflow: hidden;
-  margin-top: 2px;
-  color: var(--text-secondary);
-  font-size: 10.5px;
+  margin-top: 3px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.4;
   text-overflow: ellipsis;
   white-space: nowrap;

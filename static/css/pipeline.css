@@ -1,0 +1,453 @@
+/* ==========================================================================
+   LensGuard — Interactive Pipeline Visualizer (n8n / ReactFlow style)
+   ========================================================================== */
+
+/* Container */
+.pipeline-vis {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 32px 16px 24px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pipeline-graph {
+  position: relative;
+  min-width: 980px;
+  min-height: 420px;
+  margin: 0 auto;
+}
+
+/* SVG edge layer — sits behind nodes */
+.pipeline-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pipeline-edge {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke 0.4s ease, stroke-width 0.3s ease;
+}
+
+.pipeline-edge.is-active {
+  stroke: var(--safe);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 4px rgba(4, 120, 87, 0.25));
+}
+
+.pipeline-edge.is-danger {
+  stroke: var(--critical);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 4px rgba(200, 30, 30, 0.2));
+}
+
+/* Animated flowing dots on edges */
+.pipeline-edge-flow {
+  fill: none;
+  stroke: var(--safe);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 6 14;
+  stroke-dashoffset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pipeline-edge-flow.is-flowing {
+  opacity: 1;
+  animation: edgeFlow 0.8s linear infinite;
+}
+
+@keyframes edgeFlow {
+  to { stroke-dashoffset: -20; }
+}
+
+/* ---- Nodes ---- */
+.pipeline-node {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+  max-width: 140px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.pipeline-node:hover {
+  transform: translateY(-2px);
+}
+
+.pipeline-node:hover .pn-body {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-float);
+}
+
+.pn-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-panel);
+  transition: border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated shimmer for processing state */
+.pn-body::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 0; bottom: 0;
+  width: 200%;
+  background: linear-gradient(90deg, transparent 0%, rgba(4,120,87,0.08) 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  animation: none;
+}
+
+.pipeline-node.is-processing .pn-body::after {
+  opacity: 1;
+  animation: nodeShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes nodeShimmer {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(50%); }
+}
+
+.pn-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: var(--text-muted);
+  background: var(--surface-inset);
+  transition: color 0.3s, background 0.3s;
+}
+
+.pn-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.pn-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pn-status-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2.5px solid var(--surface);
+  z-index: 15;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+/* Badge below the node */
+.pn-badge {
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ---- Node states ---- */
+/* Idle (default) — gray */
+.pipeline-node.is-idle .pn-status-dot {
+  background: var(--border-strong);
+}
+
+/* Processing — pulsing green */
+.pipeline-node.is-processing .pn-body {
+  border-color: var(--safe);
+  box-shadow: 0 0 0 4px rgba(4, 120, 87, 0.12), var(--shadow-panel);
+}
+.pipeline-node.is-processing .pn-icon {
+  color: var(--safe);
+  background: var(--safe-soft);
+}
+.pipeline-node.is-processing .pn-status-dot {
+  background: var(--safe);
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.2);
+  animation: statusPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.2); }
+  50% { box-shadow: 0 0 0 7px rgba(4, 120, 87, 0.08); }
+}
+
+/* Done / clean — solid green */
+.pipeline-node.is-done .pn-body {
+  border-color: var(--safe-border);
+}
+.pipeline-node.is-done .pn-icon {
+  color: #fff;
+  background: var(--safe);
+}
+.pipeline-node.is-done .pn-status-dot {
+  background: var(--safe);
+}
+.pipeline-node.is-done .pn-badge {
+  opacity: 1;
+  transform: translateY(0);
+  color: var(--safe);
+  background: var(--safe-soft);
+  border-color: var(--safe-border);
+}
+
+/* Done / flagged — amber/red */
+.pipeline-node.is-flagged .pn-body {
+  border-color: var(--critical-border);
+}
+.pipeline-node.is-flagged .pn-icon {
+  color: #fff;
+  background: var(--critical);
+}
+.pipeline-node.is-flagged .pn-status-dot {
+  background: var(--critical);
+}
+.pipeline-node.is-flagged .pn-badge {
+  opacity: 1;
+  transform: translateY(0);
+  color: var(--critical);
+  background: var(--critical-soft);
+  border-color: var(--critical-border);
+}
+
+/* Skipped — dashed outline */
+.pipeline-node.is-skipped .pn-body {
+  border-style: dashed;
+  border-color: var(--border);
+  opacity: 0.6;
+}
+.pipeline-node.is-skipped .pn-status-dot {
+  background: var(--text-faint);
+}
+.pipeline-node.is-skipped .pn-badge {
+  opacity: 1;
+  transform: translateY(0);
+  color: var(--text-muted);
+}
+
+/* Selected node (clicked) */
+.pipeline-node.is-selected .pn-body {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(24, 17, 10, 0.12), var(--shadow-float) !important;
+}
+
+/* ---- Detail popover ---- */
+.pipeline-detail {
+  position: absolute;
+  z-index: 50;
+  width: 320px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 18px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-float);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.pipeline-detail.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.pipeline-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.pipeline-detail-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+}
+
+.pipeline-detail-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pipeline-detail-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pipeline-detail-status {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.pipeline-detail-close {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: var(--surface-inset);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.pipeline-detail-close:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.pipeline-detail-close svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pd-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--surface-inset);
+  font-size: 12px;
+}
+
+.pd-row:last-child { border-bottom: 0; }
+
+.pd-label {
+  color: var(--text-muted);
+  font-weight: 500;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.pd-value {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+  word-break: break-all;
+}
+
+.pd-findings {
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.pd-finding-item {
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.pd-finding-item:last-child { border-bottom: 0; }
+
+.pd-finding-cat {
+  font-weight: 600;
+  color: var(--critical);
+  font-size: 10px;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.pd-finding-snippet {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ---- Section header for pipeline ---- */
+.pipeline-section-label {
+  text-align: center;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .pipeline-graph {
+    min-width: 700px;
+  }
+  .pipeline-node {
+    min-width: 90px;
+    max-width: 120px;
+  }
+  .pn-label {
+    font-size: 10px;
+  }
+}

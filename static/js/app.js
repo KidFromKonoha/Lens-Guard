@@ -23,6 +23,7 @@
     els.views = {
       scanner: $("#view-scanner"),
       engines: $("#view-engines"),
+      benchmark: $("#view-benchmark"),
     };
     els.crumb = $("#currentCrumb");
     els.newScanBtn = $("#newScanBtn");
@@ -53,7 +54,7 @@
   }
 
   function showView(name, scroll) {
-    const view = name === "engines" ? "engines" : "scanner";
+    const view = (name === "engines" || name === "benchmark") ? name : "scanner";
     state.view = view;
 
     Object.entries(els.views).forEach(([key, node]) => {
@@ -66,12 +67,16 @@
       else item.removeAttribute("aria-current");
     });
 
-    if (els.crumb) els.crumb.textContent = view === "engines" ? "Engine status" : "Scanner";
+    if (els.crumb) {
+      els.crumb.textContent = view === "engines"
+        ? "Engine status"
+        : (view === "benchmark" ? "Evaluation benchmark" : "Scanner");
+    }
     document.title = view === "engines"
-      ? "Engine status — Prompt Warden"
-      : "Prompt Warden — LLM01 security";
+      ? "Engine status — LensGuard"
+      : (view === "benchmark" ? "Benchmark — LensGuard" : "LensGuard — LLM01 gateway");
 
-    if (view === "engines") closeEvidence();
+    if (view !== "scanner") closeEvidence();
     closeSidebar();
 
     const nextHash = "#" + view;
@@ -369,10 +374,22 @@
     return text.slice(0, Math.max(0, max - 1)) + "…";
   }
 
-  function highlightSnippets(text, snippets) {
+  function highlightSnippets(text, snippets, matched) {
     const source = String(text == null ? "" : text);
     if (!source) return "";
     const ranges = [];
+
+    // Use exact character spans from matches when available
+    if (Array.isArray(matched)) {
+      matched.forEach((m) => {
+        if (m && typeof m.start === "number" && typeof m.end === "number" && m.start >= 0 && m.end <= source.length && m.end > m.start) {
+          if (m.category !== "ml_classifier") {
+            ranges.push([m.start, m.end]);
+          }
+        }
+      });
+    }
+
     (snippets || []).forEach((raw) => {
       let needle = String(raw == null ? "" : raw).trim();
       needle = needle.replace(/(?:\.\.\.|…)$/u, "").trim();

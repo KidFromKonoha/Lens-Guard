@@ -51,6 +51,15 @@ try:
 except ImportError:
     pass
 
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
+try:
+    import ml_layer
+except Exception:
+    ml_layer = None
+
 # ---- optional parsers (degrade gracefully) ----
 try:
     import pymupdf as fitz  # PyMuPDF >= 1.24 preferred import
@@ -69,7 +78,7 @@ except ImportError:
 # CONFIG
 # ======================================================================
 GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-lite")
+DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 DEFAULT_OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma4:12b")
 DEFAULT_OLLAMA_CLOUD_MODEL = os.environ.get("OLLAMA_CLOUD_MODEL", "gemma4:31b")
@@ -956,17 +965,28 @@ def rule_scan(chunk):
             snippet = m.group(0)
             if len(snippet) > 90:
                 snippet = snippet[:90] + "..."
-            matched.append({"category": category, "weight": w, "snippet": snippet})
+            matched.append({
+                "category": category,
+                "weight": w,
+                "snippet": snippet,
+                "start": span[0],
+                "end": span[1],
+            })
             total += w
 
     anomalies = token_anomalies(text)
     chunk["_anomalies"] = len(anomalies)
     if anomalies:
         bonus = min(12.0, len(anomalies) * 4.0)
+        first_anom = anomalies[0]
+        a_start = text.find(first_anom)
+        a_end = a_start + len(first_anom) if a_start != -1 else -1
         matched.append({
             "category": "token_anomaly",
             "weight": round(bonus, 1),
-            "snippet": anomalies[0][:90],
+            "snippet": first_anom[:90],
+            "start": a_start,
+            "end": a_end,
         })
         total += bonus
 
@@ -1392,13 +1412,37 @@ def scan_file(path, args=None):
 
     for chunk in chunks:
         score, matched = rule_scan(chunk)
+        rule_score_only = score
         full_text = chunk["text"]
+
+        ml_score = 0.0
+        ml_prob = 0.0
+        if ml_layer:
+            try:
+                ml_res = ml_layer.predict_injection(full_text)
+                ml_score = ml_res.get("score", 0.0)
+                ml_prob = ml_res.get("prob", 0.0)
+                if ml_res.get("is_injection"):
+                    fused_score = max(score, ml_score)
+                    score = min(100.0, round(fused_score, 1))
+                    matched.append({
+                        "category": "ml_classifier",
+                        "weight": round(ml_score, 1),
+                        "snippet": f"TF-IDF/LR probability {ml_prob:.1%} (threshold {getattr(ml_layer, 'OPERATING_THRESHOLD', 0.72):.2f})",
+                        "start": 0,
+                        "end": len(full_text),
+                    })
+            except Exception:
+                pass
+
         rec = {
             "source": chunk["source"],
             "text": full_text[:MAX_EVIDENCE_CHARS],
             "text_length": len(full_text),
             "text_truncated": len(full_text) > MAX_EVIDENCE_CHARS,
-            "rule_score": score,
+            "rule_score": rule_score_only,
+            "ml_score": ml_score,
+            "ml_prob": ml_prob,
             "score": score,
             "level": level_of(score),
             "matched": matched,
@@ -1410,7 +1454,7 @@ def scan_file(path, args=None):
             "decode_kind": chunk.get("decode_kind"),
             "derived_from": chunk.get("derived_from"),
             "anomalies": chunk.get("_anomalies", 0),
-            "scored_by": "rules",
+            "scored_by": "ml" if (ml_score >= 30 and rule_score_only < 15) else "rules",
         }
 
         needs_judge = bool(
@@ -1465,6 +1509,10 @@ def scan_file(path, args=None):
         "structural": True,
         "unpacker": any(r.get("decoded") for r in results),
         "entropy": any(r.get("anomalies") for r in results),
+        "ml_classifier": (
+            f"active (TF-IDF + LogisticRegression, threshold: {getattr(ml_layer, 'OPERATING_THRESHOLD', 0.72):.2f})"
+            if ml_layer else "inactive"
+        ),
         "llm_judge": (f"used ({judge_used} calls, {cache_hits} cached): {judge_label}"
                       if judge_used or cache_hits
                       else (judge_label if judge_fn is None else "skipped: no borderline chunks")),

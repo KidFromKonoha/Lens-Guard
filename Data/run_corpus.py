@@ -20,15 +20,10 @@ import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-if not os.path.exists(os.path.join(HERE, "manifest.json")):
-    HERE = "/home/z/my-project/download/prompt-injection-test-corpus"
 
 CANDIDATES = [
     os.path.join(os.path.dirname(HERE), "prompt_injection_detector.py"),
     os.path.join(HERE, "prompt_injection_detector.py"),
-    os.path.join(HERE, "..", "scripts", "prompt_injection_detector.py"),
-    os.path.join(os.path.dirname(HERE), "prompt-injection-detector", "prompt_injection_detector.py"),
-    "/home/z/my-project/scripts/prompt_injection_detector.py",
 ]
 det_path = next((p for p in CANDIDATES if os.path.exists(p)), None)
 if not det_path:

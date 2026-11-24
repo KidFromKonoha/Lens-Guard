@@ -1,10 +1,15 @@
-# Prompt Warden
+# LensGuard: Explainable Prompt Injection Gateway & Firewall
 
 <p align="center">
-  <img src="static/img/logo-mark.png" alt="Prompt Warden Logo" width="140" />
+  <img src="static/img/logo-mark.png" alt="LensGuard Logo" width="140" />
 </p>
 
-> **Zero-trust document firewall against direct and indirect prompt injection for RAG systems, LLM summarizers, and autonomous agents.**
+> **Zero-trust document firewall and explainable gateway against direct and indirect prompt injection for LLM applications and RAG systems.**
+
+**LensGuard** is an explainable prompt injection security gateway designed to inspect, detect, and sanitize untrusted external content (documents, emails, web pages) before it reaches an LLM.
+
+*Academic Project by P Mohan Reddy (OUTR Bhubaneswar), Supervised by Dr. Jyotirmayee Routray.*
+*Extends [Prompt Warden](https://github.com/Soldier224K/Prompt-Injection-Detector) under the MIT License (see `NOTICE.md` and `LICENSE`).*
 
 Aligned with [OWASP Top 10 for LLM Applications 2025: LLM01 Prompt Injection](docs/OWASP_LLM01_2025.md).
 

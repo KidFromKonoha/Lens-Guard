@@ -47,6 +47,13 @@ from prompt_injection_detector import (  # noqa: E402
     scan_file as run_detector_scan,
 )
 
+try:
+    import ml_layer
+    ACTIVE_ML_THRESHOLD = getattr(ml_layer, "OPERATING_THRESHOLD", 0.72)
+except Exception:
+    ml_layer = None
+    ACTIVE_ML_THRESHOLD = 0.72
+
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
 
@@ -223,6 +230,20 @@ def _engines(probe=False):
             "error": None,
         },
         {
+            "id": "ml_layer",
+            "name": "ML Classifier (TF-IDF + LR)",
+            "kind": "offline",
+            "role": "fallback",
+            "role_label": f"Threshold {ACTIVE_ML_THRESHOLD:.2f}",
+            "configured": bool(ml_layer),
+            "reachable": bool(ml_layer),
+            "connectivity": "active" if ml_layer else "not_configured",
+            "model": f"deepset/prompt-injections (T* = {ACTIVE_ML_THRESHOLD:.2f})",
+            "models": [],
+            "details": f"Operating decision threshold: {ACTIVE_ML_THRESHOLD:.2f} (dev-set zero-false-positive operating point). Runs 100% offline.",
+            "error": None,
+        },
+        {
             "id": "ollama_cloud",
             "name": "Ollama Cloud",
             "kind": "cloud",
@@ -322,6 +343,12 @@ def _engines(probe=False):
             "default_model": local_model,
             "error": None,
         },
+        "ml_layer": {
+            "available": bool(ml_layer),
+            "configured": bool(ml_layer),
+            "operating_threshold": ACTIVE_ML_THRESHOLD,
+            "default_model": f"deepset/prompt-injections (threshold: {ACTIVE_ML_THRESHOLD:.2f})",
+        },
     }
     _ENGINE_CACHE.update({"ts": now, "data": data})
     return data
@@ -362,6 +389,38 @@ def _scan(target_path, provider="auto", model=None,
         "offline" if requested_provider == "offline" else requested_provider
     )
     result["app_version"] = APP_VERSION
+
+    try:
+        from sanitise import sanitise_text, wrap_external
+        all_matches = []
+        for c in result.get("chunks", []):
+            all_matches.extend(c.get("matched", []))
+
+        raw_text = ""
+        try:
+            with open(target_path, "r", encoding="utf-8", errors="ignore") as f:
+                raw_text = f.read()
+        except Exception:
+            raw_text = "\n\n".join(c.get("text", "") for c in result.get("chunks", []))
+
+        san_res = sanitise_text(raw_text, all_matches)
+        result["sanitisation"] = {
+            "clean_text": san_res["sanitised_text"],
+            "raw_text": raw_text,
+            "removed_items": san_res["removed_items"],
+            "is_modified": san_res["is_modified"],
+            "wrapped_content": wrap_external(san_res["sanitised_text"]),
+        }
+    except Exception as e:
+        result["sanitisation"] = {
+            "clean_text": "",
+            "raw_text": "",
+            "removed_items": [],
+            "is_modified": False,
+            "wrapped_content": "",
+            "error": str(e),
+        }
+
     return result
 
 
@@ -466,6 +525,39 @@ def scan_file_route():
             os.unlink(tmp_path)
         except OSError:
             pass
+
+
+@app.route("/ask", methods=["POST"])
+def ask_route():
+    data = request.get_json(force=True, silent=True) or {}
+    question = (data.get("question") or "").strip()
+    text = (data.get("text") or "").strip()
+    provider = data.get("provider", "auto")
+
+    if not question:
+        return jsonify({"error": "No question provided"}), 400
+    if not text:
+        return jsonify({"error": "No context or untrusted text provided"}), 400
+
+    try:
+        from gateway import ask_gateway
+        result = ask_gateway(question=question, untrusted_content=text, provider=provider)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/eval/data")
+def eval_data_route():
+    eval_file = Path(__file__).parent / "eval" / "eval_results.json"
+    if not eval_file.exists():
+        return jsonify({"error": "Evaluation data not yet generated."}), 404
+    try:
+        import json
+        data = json.loads(eval_file.read_text(encoding="utf-8"))
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ======================================================================

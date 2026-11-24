@@ -1,62 +1,72 @@
 /* ==========================================================================
-   Prompt Inspector — design tokens and base primitives
-   Dark graphite, restrained indigo accent, semantic security states only.
+   LensGuard — Design Tokens & Base Primitives
+   Warm Editorial / Archival Security Theme (Yellowish Off-White & Stone)
+   Anti-Slop Craft: No purple gradients, high contrast, clean hierarchy.
    ========================================================================== */
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Surfaces */
-  --bg: #090b0f;
-  --sidebar: #0d1015;
-  --surface: #11151b;
-  --surface-raised: #171c24;
-  --surface-2: #1b222c;
-  --surface-inset: #0b0e13;
-  --glass: rgba(19, 24, 32, 0.78);
-  --glass-strong: rgba(13, 16, 21, 0.9);
+  /* Surfaces (Warm yellowish off-white / Editorial Paper palette) */
+  --bg: #FAF7F0;             /* Warm alabaster / yellowish off-white */
+  --sidebar: #F2EBE0;        /* Warm stone archival sidebar */
+  --surface: #FFFFFF;        /* Crisp white primary card surface */
+  --surface-raised: #F8F4EC; /* Subtle raised surface for cards & headers */
+  --surface-2: #EBE3D5;      /* Secondary pills, badges, interactive elements */
+  --surface-inset: #F3ECE0;  /* Sunken code blocks, inputs, gutters */
+  --glass: rgba(250, 247, 240, 0.94);
+  --glass-strong: rgba(242, 235, 224, 0.98);
 
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.11);
-  --border-focus: rgba(129, 140, 248, 0.72);
+  /* Hover & Active tints for light theme */
+  --hover-tint: rgba(60, 50, 40, 0.04);
+  --active-tint: rgba(60, 50, 40, 0.08);
 
-  /* Type */
-  --text: #e8ecf2;
-  --text-secondary: #929baa;
-  --text-muted: #626d7c;
-  --text-faint: #4b5563;
+  /* Borders (Warm stone hairline borders) */
+  --border: #E2DACD;
+  --border-strong: #CFC3AF;
+  --border-focus: #1C1917;
 
-  /* Accent: desaturated indigo */
-  --accent: #6366f1;
-  --accent-hover: #7376f4;
-  --accent-soft: rgba(99, 102, 241, 0.13);
-  --accent-border: rgba(129, 140, 248, 0.32);
-  --accent-text: #a5b4fc;
+  /* Type (Stone Charcoal & Ink - high contrast & readability) */
+  --text: #1C1917;           /* Stone 900 */
+  --text-secondary: #57534E; /* Stone 600 */
+  --text-muted: #78716C;     /* Stone 500 */
+  --text-faint: #A8A29E;     /* Stone 400 */
 
-  /* Semantic states */
-  --critical: #f87171;
-  --critical-soft: rgba(248, 113, 113, 0.12);
-  --critical-border: rgba(248, 113, 113, 0.28);
-  --high: #fb923c;
-  --high-soft: rgba(251, 146, 60, 0.12);
-  --high-border: rgba(251, 146, 60, 0.28);
-  --medium: #fbbf24;
-  --medium-soft: rgba(251, 191, 36, 0.11);
-  --medium-border: rgba(251, 191, 36, 0.26);
-  --low: #a3e635;
-  --low-soft: rgba(163, 230, 53, 0.1);
-  --low-border: rgba(163, 230, 53, 0.24);
-  --safe: #34d399;
-  --safe-soft: rgba(52, 211, 153, 0.1);
-  --safe-border: rgba(52, 211, 153, 0.24);
-  --unknown: #6b7280;
-  --unknown-soft: rgba(107, 114, 128, 0.1);
+  /* Accent: Authoritative Slate Ink (Anti-slop: replacing generic AI purple) */
+  --accent: #18181B;
+  --accent-hover: #27272A;
+  --accent-soft: #EFE6D6;
+  --accent-border: #CFC0A9;
+  --accent-text: #18181B;
+
+  /* Semantic Security States (Rich, non-neon jewel tones with warm soft backings) */
+  --critical: #DC2626;
+  --critical-soft: #FEF2F2;
+  --critical-border: #FECACA;
+
+  --high: #EA580C;
+  --high-soft: #FFF7ED;
+  --high-border: #FED7AA;
+
+  --medium: #D97706;
+  --medium-soft: #FFFBEB;
+  --medium-border: #FDE68A;
+
+  --low: #65A30D;
+  --low-soft: #F7FEE7;
+  --low-border: #D9F99D;
+
+  --safe: #059669;
+  --safe-soft: #ECFDF5;
+  --safe-border: #A7F3D0;
+
+  --unknown: #52525B;
+  --unknown-soft: #F4F4F5;
 
   /* Geometry */
   --radius-xs: 4px;
   --radius-control: 6px;
-  --radius-panel: 10px;
+  --radius-panel: 9px;
   --radius-large: 12px;
   --sidebar-width: 236px;
   --topbar-height: 52px;
@@ -75,15 +85,13 @@
   --s-10: 64px;
 
   /* Type stacks */
-  --font-sans: Inter, "SF Pro Display", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas,
-    "Liberation Mono", monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Elevation */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.22), 0 12px 32px rgba(0, 0, 0, 0.16);
-  --shadow-float: 0 18px 54px rgba(0, 0, 0, 0.48), 0 2px 8px rgba(0, 0, 0, 0.3);
+  /* Elevation (Clean, tight architectural hairline shadows) */
+  --shadow-sm: 0 1px 2px rgba(44, 38, 28, 0.05);
+  --shadow-panel: 0 1px 3px rgba(44, 38, 28, 0.06), 0 4px 12px rgba(44, 38, 28, 0.04);
+  --shadow-float: 0 10px 24px rgba(44, 38, 28, 0.09), 0 2px 6px rgba(44, 38, 28, 0.04);
 
   /* Motion */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -112,9 +120,7 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  background:
-    radial-gradient(1200px 500px at 52% -260px, rgba(99, 102, 241, 0.08), transparent 70%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 13px;
@@ -125,8 +131,8 @@ body {
 }
 
 ::selection {
-  background: rgba(99, 102, 241, 0.34);
-  color: #fff;
+  background: #E8DFC8;
+  color: #1C1917;
 }
 
 h1,
@@ -186,12 +192,12 @@ svg {
 /* Thin technical scrollbars. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2b333f transparent;
+  scrollbar-color: #D3C7B5 transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
 }
 
 *::-webkit-scrollbar-track {
@@ -199,16 +205,16 @@ svg {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #2b333f;
-  border: 3px solid transparent;
-  border-radius: 8px;
+  background: #D3C7B5;
+  border: 2px solid transparent;
+  border-radius: 6px;
   background-clip: padding-box;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #3b4654;
+  background: #BFAF9B;
   background-clip: padding-box;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
 }
 
 .sr-only {

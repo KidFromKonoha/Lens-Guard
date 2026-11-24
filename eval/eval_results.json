@@ -1,0 +1,308 @@
+{
+  "deepset_test": {
+    "clean": {
+      "total": 107,
+      "tp": 14,
+      "fn": 45,
+      "fp": 0,
+      "tn": 48,
+      "accuracy": 57.94,
+      "precision": 100.0,
+      "recall": 23.73,
+      "f1": 38.36,
+      "fpr": 0.0,
+      "fpr_95_upper": 6.2,
+      "avg_latency_ms": 1.7
+    },
+    "raw": {
+      "total": 116,
+      "tp": 14,
+      "fn": 46,
+      "fp": 0,
+      "tn": 56,
+      "accuracy": 60.34,
+      "precision": 100.0,
+      "recall": 23.33,
+      "f1": 37.84,
+      "fpr": 0.0,
+      "fpr_95_upper": 5.4,
+      "avg_latency_ms": 0.91
+    }
+  },
+  "defense_benchmark_99": {
+    "Config A": {},
+    "Config B": {},
+    "Config A (Baseline Rules)": {
+      "by_category": {
+        "base_malicious_files": {
+          "total": 18,
+          "tp": 18,
+          "fn": 0,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 100.0,
+          "precision": 100.0,
+          "recall": 100.0,
+          "f1": 100.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 5.98
+        },
+        "base_malicious_prompts": {
+          "total": 18,
+          "tp": 4,
+          "fn": 14,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 22.22,
+          "precision": 100.0,
+          "recall": 22.22,
+          "f1": 36.36,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 6.57
+        },
+        "base_benign_controls": {
+          "total": 15,
+          "tp": 0,
+          "fn": 0,
+          "fp": 0,
+          "tn": 15,
+          "accuracy": 100.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 20.0,
+          "avg_latency_ms": 3.19
+        },
+        "obfuscated_prompts": {
+          "total": 18,
+          "tp": 12,
+          "fn": 6,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 66.67,
+          "precision": 100.0,
+          "recall": 66.67,
+          "f1": 80.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 5.95
+        },
+        "author_malicious_docs": {
+          "total": 15,
+          "tp": 10,
+          "fn": 5,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 66.67,
+          "precision": 100.0,
+          "recall": 66.67,
+          "f1": 80.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 6.58
+        },
+        "author_benign_docs": {
+          "total": 15,
+          "tp": 0,
+          "fn": 0,
+          "fp": 0,
+          "tn": 15,
+          "accuracy": 100.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 20.0,
+          "avg_latency_ms": 7.42
+        }
+      },
+      "overall": {
+        "total": 99,
+        "tp": 44,
+        "fn": 25,
+        "fp": 0,
+        "tn": 30,
+        "accuracy": 74.75,
+        "precision": 100.0,
+        "recall": 63.77,
+        "f1": 77.88,
+        "fpr": 0.0,
+        "fpr_95_upper": 10.0,
+        "avg_latency_ms": 5.97
+      }
+    },
+    "Config B (LensGuard + ML)": {
+      "by_category": {
+        "base_malicious_files": {
+          "total": 18,
+          "tp": 18,
+          "fn": 0,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 100.0,
+          "precision": 100.0,
+          "recall": 100.0,
+          "f1": 100.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 11.84
+        },
+        "base_malicious_prompts": {
+          "total": 18,
+          "tp": 9,
+          "fn": 9,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 50.0,
+          "precision": 100.0,
+          "recall": 50.0,
+          "f1": 66.67,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 3.43
+        },
+        "base_benign_controls": {
+          "total": 15,
+          "tp": 0,
+          "fn": 0,
+          "fp": 0,
+          "tn": 15,
+          "accuracy": 100.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 20.0,
+          "avg_latency_ms": 10.77
+        },
+        "obfuscated_prompts": {
+          "total": 18,
+          "tp": 14,
+          "fn": 4,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 77.78,
+          "precision": 100.0,
+          "recall": 77.78,
+          "f1": 87.5,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 3.91
+        },
+        "author_malicious_docs": {
+          "total": 15,
+          "tp": 11,
+          "fn": 4,
+          "fp": 0,
+          "tn": 0,
+          "accuracy": 73.33,
+          "precision": 100.0,
+          "recall": 73.33,
+          "f1": 84.62,
+          "fpr": 0.0,
+          "fpr_95_upper": 0.0,
+          "avg_latency_ms": 3.85
+        },
+        "author_benign_docs": {
+          "total": 15,
+          "tp": 0,
+          "fn": 0,
+          "fp": 0,
+          "tn": 15,
+          "accuracy": 100.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "fpr_95_upper": 20.0,
+          "avg_latency_ms": 4.3
+        }
+      },
+      "overall": {
+        "total": 99,
+        "tp": 52,
+        "fn": 17,
+        "fp": 0,
+        "tn": 30,
+        "accuracy": 82.83,
+        "precision": 100.0,
+        "recall": 75.36,
+        "f1": 85.95,
+        "fpr": 0.0,
+        "fpr_95_upper": 10.0,
+        "avg_latency_ms": 6.35
+      }
+    }
+  },
+  "synthetic_eval_30": {
+    "Config A (Baseline Rules)": {
+      "total": 30,
+      "tp": 10,
+      "fn": 5,
+      "fp": 0,
+      "tn": 15,
+      "accuracy": 83.33,
+      "precision": 100.0,
+      "recall": 66.67,
+      "f1": 80.0,
+      "fpr": 0.0,
+      "fpr_95_upper": 20.0,
+      "avg_latency_ms": 8.05
+    },
+    "Config B (LensGuard + ML)": {
+      "total": 30,
+      "tp": 11,
+      "fn": 4,
+      "fp": 0,
+      "tn": 15,
+      "accuracy": 86.67,
+      "precision": 100.0,
+      "recall": 73.33,
+      "f1": 84.62,
+      "fpr": 0.0,
+      "fpr_95_upper": 20.0,
+      "avg_latency_ms": 3.42
+    }
+  },
+  "heldout_synthetic_20": {
+    "Config A (Baseline Rules)": {
+      "total": 20,
+      "tp": 10,
+      "fn": 0,
+      "fp": 1,
+      "tn": 9,
+      "accuracy": 95.0,
+      "precision": 90.91,
+      "recall": 100.0,
+      "f1": 95.24,
+      "fpr": 10.0,
+      "fpr_95_upper": 28.6,
+      "avg_latency_ms": 18.37
+    },
+    "Config B (LensGuard + ML)": {
+      "total": 20,
+      "tp": 10,
+      "fn": 0,
+      "fp": 1,
+      "tn": 9,
+      "accuracy": 95.0,
+      "precision": 90.91,
+      "recall": 100.0,
+      "f1": 95.24,
+      "fpr": 10.0,
+      "fpr_95_upper": 28.6,
+      "avg_latency_ms": 13.43
+    }
+  },
+  "base_layer_breakdown": {
+    "total_attacks": 36,
+    "both_rules_and_ml": 13,
+    "rules_only": 9,
+    "ml_only": 5,
+    "missed_both": 9
+  },
+  "operating_threshold": 0.72
+}

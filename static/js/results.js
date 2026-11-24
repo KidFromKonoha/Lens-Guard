@@ -57,6 +57,29 @@
     els.copyJsonBtn = $("#copyJsonBtn");
     els.resultsSource = $("#resultsSource");
 
+    // LensGuard elements
+    els.sanitisationPanel = $("#sanitisationPanel");
+    els.sanitiseBadge = $("#sanitiseBadge");
+    els.tabBtnClean = $("#tabBtnClean");
+    els.tabBtnEnvelope = $("#tabBtnEnvelope");
+    els.tabBtnRemovals = $("#tabBtnRemovals");
+    els.paneCleanText = $("#paneCleanText");
+    els.paneEnvelope = $("#paneEnvelope");
+    els.paneRemovals = $("#paneRemovals");
+    els.sanitisedCodeBlock = $("#sanitisedCodeBlock");
+    els.envelopeCodeBlock = $("#envelopeCodeBlock");
+    els.removalsCountBadge = $("#removalsCountBadge");
+    els.removalsTableBody = $("#removalsTableBody");
+    els.gatewayPanel = $("#gatewayPanel");
+    els.gatewayQuestionInput = $("#gatewayQuestionInput");
+    els.runGatewayBtn = $("#runGatewayBtn");
+    els.gwUnprotectedModel = $("#gwUnprotectedModel");
+    els.gwUnprotectedResponse = $("#gwUnprotectedResponse");
+    els.gwUnprotectedLatency = $("#gwUnprotectedLatency");
+    els.gwProtectedModel = $("#gwProtectedModel");
+    els.gwProtectedResponse = $("#gwProtectedResponse");
+    els.gwProtectedLatency = $("#gwProtectedLatency");
+
     bindEvents();
   }
 
@@ -108,6 +131,19 @@
         App().copyText(JSON.stringify(state.raw, null, 2), "JSON report");
       });
     }
+
+    if (els.tabBtnClean) {
+      els.tabBtnClean.addEventListener("click", () => showSanitiseTab("clean"));
+    }
+    if (els.tabBtnEnvelope) {
+      els.tabBtnEnvelope.addEventListener("click", () => showSanitiseTab("envelope"));
+    }
+    if (els.tabBtnRemovals) {
+      els.tabBtnRemovals.addEventListener("click", () => showSanitiseTab("removals"));
+    }
+    if (els.runGatewayBtn) {
+      els.runGatewayBtn.addEventListener("click", runGatewayComparison);
+    }
   }
 
   /* ----------------------------------------------------------------------
@@ -132,6 +168,7 @@
     renderFilters();
     renderFindings();
     renderTechnical(data, chunks);
+    renderSanitisation(data);
     clearInspector();
 
     if (state.findings.length) {
@@ -254,6 +291,9 @@
       Math.max(max, Number(chunk.structural) || 0), 0);
     const decodedChunks = chunks.filter((chunk) => chunk.decoded);
     const anomalyChunks = chunks.filter((chunk) => Number(chunk.anomalies) > 0);
+    const mlHits = chunks.filter((chunk) => Number(chunk.ml_score) >= 30 || (chunk.matched && chunk.matched.some((m) => m.category === "ml_classifier")));
+    const maxMlProb = chunks.reduce((max, chunk) => Math.max(max, Number(chunk.ml_prob) || 0), 0);
+    const mlDetected = mlHits.length > 0;
     const judgeResults = chunks.filter((chunk) => chunk.judge);
     const judgeErrors = judgeResults.filter((chunk) => {
       const value = chunk.judge && chunk.judge.verdict;
@@ -304,6 +344,17 @@
             : "No signals",
           "Base64 · hex · URL · HTML · ROT13 · token entropy",
           "Offline",
+          false
+        ),
+        layerCard(
+          "ML", "ML Classifier",
+          mlDetected ? "high" : "safe",
+          mlDetected ? "Detected" : "Clear",
+          mlDetected
+            ? mlHits.length + " semantic chunk" + (mlHits.length === 1 ? "" : "s") + " (prob " + Math.round(maxMlProb * 100) + "%)"
+            : "No signals",
+          "TF-IDF (word+char n-grams) + Logistic Regression",
+          "Offline ML",
           false
         ),
         layerCard(
@@ -656,11 +707,11 @@
       .map((match) => match.snippet)
       .filter(Boolean);
     const highlighted = text
-      ? App().highlightSnippets(text, snippets)
+      ? App().highlightSnippets(text, snippets, chunk.matched)
       : '<span class="muted">The backend returned no extracted text for this chunk.</span>';
     const note = chunk.text_truncated
       ? "Preview truncated by the backend at " + (chunk.text_length || text.length) + " characters."
-      : "Highlighted spans are exact rule snippets found in the extracted text. The backend does not return source offsets.";
+      : "Highlighted phrases indicate exact malicious patterns and spans flagged by LensGuard.";
     const meta = [];
     if (chunk.decoded) meta.push("Decoded" + (chunk.decode_kind ? " · " + chunk.decode_kind : ""));
     if (chunk.derived_from) meta.push("Derived from " + chunk.derived_from);
@@ -803,6 +854,123 @@
       metaItem("Judge errors", String(judgeErrors), true, judgeErrors > 0),
     ];
     els.technicalMeta.innerHTML = items.join("");
+  }
+
+  function showSanitiseTab(name) {
+    if (els.tabBtnClean) els.tabBtnClean.classList.toggle("active", name === "clean");
+    if (els.tabBtnEnvelope) els.tabBtnEnvelope.classList.toggle("active", name === "envelope");
+    if (els.tabBtnRemovals) els.tabBtnRemovals.classList.toggle("active", name === "removals");
+    if (els.paneCleanText) els.paneCleanText.hidden = name !== "clean";
+    if (els.paneEnvelope) els.paneEnvelope.hidden = name !== "envelope";
+    if (els.paneRemovals) els.paneRemovals.hidden = name !== "removals";
+  }
+
+  function renderSanitisation(data) {
+    const san = data && data.sanitisation;
+    if (!san) {
+      if (els.sanitisationPanel) els.sanitisationPanel.hidden = true;
+      return;
+    }
+    if (els.sanitisationPanel) els.sanitisationPanel.hidden = false;
+    const isModified = san.is_modified;
+    const removals = san.removed_items || [];
+
+    if (els.sanitiseBadge) {
+      els.sanitiseBadge.textContent = isModified
+        ? (removals.length + " attack item" + (removals.length === 1 ? "" : "s") + " neutralized")
+        : "No redactions needed (clean)";
+      els.sanitiseBadge.style.color = isModified ? "var(--high)" : "var(--safe)";
+    }
+    if (els.removalsCountBadge) {
+      els.removalsCountBadge.textContent = String(removals.length);
+    }
+    if (els.sanitisedCodeBlock) {
+      els.sanitisedCodeBlock.textContent = san.clean_text || "(No content)";
+    }
+    if (els.envelopeCodeBlock) {
+      els.envelopeCodeBlock.textContent = san.wrapped_content || "(No envelope)";
+    }
+    if (els.removalsTableBody) {
+      if (!removals.length) {
+        els.removalsTableBody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:12px;">No malicious items required removal.</td></tr>';
+      } else {
+        els.removalsTableBody.innerHTML = removals.map((item) =>
+          '<tr>' +
+            '<td><span class="badge">' + App().escapeHtml(item.type || "rule") + '</span></td>' +
+            '<td class="mono">' + App().escapeHtml(item.category || "—") + '</td>' +
+            '<td><div class="hit-snippet" style="color:var(--critical);">' + App().escapeHtml(item.snippet || item.reason || "—") + '</div></td>' +
+            '<td><span class="severity-badge" data-tone="safe">' + App().escapeHtml(item.replacement || "Stripped") + '</span></td>' +
+          '</tr>'
+        ).join("");
+      }
+    }
+
+    // Reset gateway comparison cards
+    if (els.gwUnprotectedResponse) {
+      els.gwUnprotectedResponse.textContent = "Click 'Compare Responses' to observe how an unprotected LLM responds to the untrusted document...";
+    }
+    if (els.gwProtectedResponse) {
+      els.gwProtectedResponse.textContent = "Click 'Compare Responses' to observe how LensGuard neutralizes injection and preserves safe operation...";
+    }
+    if (els.gwUnprotectedLatency) els.gwUnprotectedLatency.textContent = "Latency: —";
+    if (els.gwProtectedLatency) els.gwProtectedLatency.textContent = "Latency: —";
+  }
+
+  async function runGatewayComparison() {
+    if (!state.raw) return;
+    const san = state.raw.sanitisation;
+    const textToTest = (san && san.raw_text)
+      ? san.raw_text
+      : state.chunks.map((c) => c.text || "").join("\n\n");
+
+    const question = els.gatewayQuestionInput ? els.gatewayQuestionInput.value.trim() : "";
+    if (!question) {
+      App().toast("Please enter a question prompt", "error");
+      return;
+    }
+
+    if (els.runGatewayBtn) {
+      els.runGatewayBtn.disabled = true;
+      els.runGatewayBtn.textContent = "Querying Gateway Models...";
+    }
+    if (els.gwUnprotectedResponse) els.gwUnprotectedResponse.textContent = "Waiting for raw model response...";
+    if (els.gwProtectedResponse) els.gwProtectedResponse.textContent = "Running LensGuard sanitization + protected model...";
+
+    try {
+      const resp = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: question,
+          text: textToTest,
+          provider: (state.meta && state.meta.provider) || "auto",
+        }),
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.error || ("Gateway HTTP " + resp.status));
+      }
+      const result = await resp.json();
+
+      if (els.gwUnprotectedModel) els.gwUnprotectedModel.textContent = result.without_lensguard.model || "Model";
+      if (els.gwUnprotectedResponse) els.gwUnprotectedResponse.textContent = result.without_lensguard.response || "No response";
+      if (els.gwUnprotectedLatency) els.gwUnprotectedLatency.textContent = "Latency: " + result.without_lensguard.latency_ms + "ms";
+
+      if (els.gwProtectedModel) els.gwProtectedModel.textContent = result.with_lensguard.model || "LensGuard + Model";
+      if (els.gwProtectedResponse) els.gwProtectedResponse.textContent = result.with_lensguard.response || "No response";
+      if (els.gwProtectedLatency) els.gwProtectedLatency.textContent = "Latency: " + result.with_lensguard.latency_ms + "ms";
+
+      App().toast("Gateway comparison complete!", "safe");
+    } catch (err) {
+      if (els.gwUnprotectedResponse) els.gwUnprotectedResponse.textContent = "Error: " + err.message;
+      if (els.gwProtectedResponse) els.gwProtectedResponse.textContent = "Error: " + err.message;
+      App().toast("Gateway request failed: " + err.message, "error");
+    } finally {
+      if (els.runGatewayBtn) {
+        els.runGatewayBtn.disabled = false;
+        els.runGatewayBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-scan"></use></svg><span>Compare Responses</span>';
+      }
+    }
   }
 
   function clear() {

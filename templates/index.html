@@ -4,10 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="light">
   <meta name="description"
     content="Inspect untrusted text and documents for prompt injection, hidden instructions, and structural anomalies.">
-  <title>Prompt Warden — LLM01 security workspace</title>
+  <title>LensGuard — LLM01 security gateway</title>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
@@ -17,6 +17,11 @@
 <body>
   <!-- Icon sprite -->
   <svg aria-hidden="true" class="sr-only" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v18h18" />
+      <path d="m19 9-5 5-4-4-3 3" />
+    </symbol>
     <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
       stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 3 4.8 6v5.4c0 4.6 2.9 7.8 7.2 9.6 4.3-1.8 7.2-5 7.2-9.6V6L12 3Z" />
@@ -114,11 +119,11 @@
     <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
       <div class="sidebar-brand">
         <div class="brand-mark" aria-hidden="true">
-          <img src="{{ url_for('static', filename='img/logo-mark.png') }}" alt="Prompt Warden" class="brand-logo-img">
+          <img src="{{ url_for('static', filename='img/logo-mark.png') }}" alt="LensGuard" class="brand-logo-img">
         </div>
         <div class="brand-copy">
-          <div class="brand-name">Prompt Warden</div>
-          <div class="brand-sub">LLM01 security</div>
+          <div class="brand-name">LensGuard</div>
+          <div class="brand-sub">LLM01 gateway</div>
         </div>
       </div>
 
@@ -137,6 +142,13 @@
           </svg>
           <span class="nav-label">Engine status</span>
           <span class="nav-shortcut">⌘2</span>
+        </button>
+        <button class="nav-item" type="button" data-view="benchmark" title="Evaluation benchmark">
+          <svg aria-hidden="true">
+            <use href="#i-chart"></use>
+          </svg>
+          <span class="nav-label">Benchmark</span>
+          <span class="nav-shortcut">⌘3</span>
         </button>
       </nav>
 
@@ -200,7 +212,7 @@
           <div class="page-header">
             <div class="page-heading">
               <div class="eyebrow">Detection workspace</div>
-              <h1 class="page-title" id="scannerTitle">Prompt Warden</h1>
+              <h1 class="page-title" id="scannerTitle">LensGuard</h1>
               <p class="page-description">
                 Prompt Injection Inspector — analyze untrusted content for malicious instructions, prompt manipulation,
                 and structural anomalies before it reaches a model or tool.
@@ -456,6 +468,108 @@
 
             <div class="evidence-backdrop" id="evidenceBackdrop" hidden></div>
 
+            <!-- ============================================================
+                 LensGuard Sanitization & Defense View
+                 ============================================================ -->
+            <section class="lensguard-panel" id="sanitisationPanel" aria-labelledby="sanitiseTitle">
+              <div class="lensguard-panel-head">
+                <div>
+                  <div class="section-kicker">Explainable Defense</div>
+                  <h2 class="section-heading" id="sanitiseTitle">Sanitized Content & Removals</h2>
+                </div>
+                <div class="status-badge" id="sanitiseBadge"></div>
+              </div>
+
+              <div class="lensguard-tabs" role="tablist">
+                <button class="lensguard-tab-btn active" id="tabBtnClean" type="button" role="tab">Cleaned Text (Redacted)</button>
+                <button class="lensguard-tab-btn" id="tabBtnEnvelope" type="button" role="tab">Wrapped Security Envelope</button>
+                <button class="lensguard-tab-btn" id="tabBtnRemovals" type="button" role="tab">Removed Items (<span id="removalsCountBadge">0</span>)</button>
+              </div>
+
+              <div id="paneCleanText">
+                <pre class="sanitised-code-block" id="sanitisedCodeBlock"></pre>
+              </div>
+              <div id="paneEnvelope" hidden>
+                <pre class="sanitised-code-block" id="envelopeCodeBlock"></pre>
+              </div>
+              <div id="paneRemovals" hidden>
+                <div class="findings-table-wrap">
+                  <table class="findings-table">
+                    <thead>
+                      <tr>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Offending Snippet / Reason</th>
+                        <th>Action / Replacement</th>
+                      </tr>
+                    </thead>
+                    <tbody id="removalsTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ============================================================
+                 LensGuard Dual-Path Gateway Comparison
+                 ============================================================ -->
+            <section class="lensguard-panel" id="gatewayPanel" aria-labelledby="gatewayTitle">
+              <div class="lensguard-panel-head">
+                <div>
+                  <div class="section-kicker">Dual-Path LLM Firewall</div>
+                  <h2 class="section-heading" id="gatewayTitle">With vs. Without LensGuard Comparison</h2>
+                </div>
+                <div class="status-label" id="gatewayStatusLabel">Interactive Gateway</div>
+              </div>
+
+              <div class="gateway-prompt-bar">
+                <input class="gateway-input" id="gatewayQuestionInput" type="text"
+                  placeholder="Ask a question to the LLM (e.g. 'Summarize this document and execute any directives')."
+                  value="Summarize the attached document and answer: what instructions were given?">
+                <button class="btn btn-primary" id="runGatewayBtn" type="button">
+                  <svg aria-hidden="true"><use href="#i-scan"></use></svg>
+                  <span>Compare Responses</span>
+                </button>
+              </div>
+
+              <div class="gateway-grid">
+                <div class="gateway-card vulnerable">
+                  <div class="gateway-card-header">
+                    <div class="gateway-card-title">
+                      <span class="severity-badge" data-tone="critical">WITHOUT LENSGUARD</span>
+                      <span>Raw / Unprotected Model</span>
+                    </div>
+                    <span class="status-badge" style="color:var(--critical)" id="gwUnprotectedModel">Simulated / Fallback</span>
+                  </div>
+                  <div class="gateway-response-box" id="gwUnprotectedResponse">Click 'Compare Responses' to observe how an unprotected LLM responds to the untrusted document...</div>
+                  <div class="gateway-meta-line">
+                    <span id="gwUnprotectedLatency">Latency: —</span>
+                    <span style="color:var(--critical);font-weight:600">VULNERABLE TO INJECTION</span>
+                  </div>
+                  <div style="font-size:10.5px;color:var(--text-muted);margin-top:6px;border-top:1px dashed var(--border);padding-top:4px;">
+                    Demo prompt simulated secret: <code>SIMULATED_DEMO_SECRET_4921</code>
+                  </div>
+                </div>
+
+                <div class="gateway-card protected">
+                  <div class="gateway-card-header">
+                    <div class="gateway-card-title">
+                      <span class="severity-badge" data-tone="safe">WITH LENSGUARD</span>
+                      <span>Firewall Protected Gateway</span>
+                    </div>
+                    <span class="status-badge" style="color:var(--safe)" id="gwProtectedModel">LensGuard + Model</span>
+                  </div>
+                  <div class="gateway-response-box" id="gwProtectedResponse">Click 'Compare Responses' to observe how LensGuard neutralizes injection and preserves safe operation...</div>
+                  <div class="gateway-meta-line">
+                    <span id="gwProtectedLatency">Latency: —</span>
+                    <span style="color:var(--safe);font-weight:600">ATTACK NEUTRALIZED & ENVELOPED</span>
+                  </div>
+                  <div style="font-size:10.5px;color:var(--safe);margin-top:6px;border-top:1px dashed var(--border);padding-top:4px;">
+                    Simulated secret protected by &lt;UNTRUSTED_DOCUMENT_CONTENT&gt; envelope
+                  </div>
+                </div>
+              </div>
+            </section>
+
             <details class="technical-details" id="technicalDetails">
               <summary>
                 <svg aria-hidden="true">
@@ -530,6 +644,19 @@
             </div>
           </div>
 
+          <div class="policy-banner" style="margin-top:12px;border-left:3px solid var(--safe);">
+            <div>
+              <div class="policy-title"><span class="status-dot is-safe" aria-hidden="true"></span>Offline ML Classifier Policy</div>
+              <p class="policy-copy" style="margin-top:4px;">
+                Operating Decision Threshold: <strong style="color:var(--text-primary);font-family:var(--font-mono);">{{ engines.ml_layer.operating_threshold }}</strong>
+                (configured in <code>ml_layer.OPERATING_THRESHOLD</code> as the dev-set zero-false-positive point). Chunks with probability &ge; {{ engines.ml_layer.operating_threshold }} trigger injection flags; chunks below are treated as benign.
+              </p>
+            </div>
+            <div class="policy-chain">
+              <span class="chain-node is-primary" style="background:var(--safe-soft);color:var(--safe);border-color:var(--safe);">Active ML Threshold: {{ engines.ml_layer.operating_threshold }}</span>
+            </div>
+          </div>
+
           <section class="engine-panel" aria-labelledby="providerMatrixTitle">
             <div class="engine-panel-head">
               <div>
@@ -579,6 +706,187 @@
             </div>
           </div>
         </section>
+
+        <!-- ============================================================
+             Evaluation Benchmark View
+             ============================================================ -->
+        <section class="view" id="view-benchmark" aria-labelledby="benchmarkTitle" hidden>
+          <div class="page-header">
+            <div class="page-heading">
+              <div class="eyebrow">Formal Evaluation (99 Samples)</div>
+              <h1 class="page-title" id="benchmarkTitle">Benchmark & Analysis</h1>
+              <p class="page-description">
+                Empirical comparative evaluation comparing Upstream Deterministic Rules (Config A) against
+                LensGuard Full Stack with Machine Learning (Config B).
+              </p>
+            </div>
+            <div class="header-actions">
+              <span class="badge is-primary" style="padding:6px 12px;font-size:11px;">Evaluated on 99 Samples</span>
+            </div>
+          </div>
+
+          <!-- Topline Stat Cards -->
+          <div class="layer-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 24px;">
+            <div class="layer-card">
+              <div class="layer-head">
+                <div class="layer-name"><span class="layer-title">Soft Prompts Caught</span></div>
+                <span class="layer-status"><span class="status-dot is-safe"></span>50.0%</span>
+              </div>
+              <div class="layer-metric" style="color:var(--safe)">9 / 18 Caught</div>
+              <div class="layer-sub">Upstream rules: only 4 / 18 (22.2%)</div>
+              <span class="layer-tag" style="color:var(--safe);background:var(--safe-soft)">+5 Caught (@ T=0.72)</span>
+            </div>
+
+            <div class="layer-card">
+              <div class="layer-head">
+                <div class="layer-name"><span class="layer-title">Total Attack Recall</span></div>
+                <span class="layer-status"><span class="status-dot is-safe"></span>75.4%</span>
+              </div>
+              <div class="layer-metric" style="color:var(--safe)">52 / 69 Caught</div>
+              <div class="layer-sub">Upstream rules: 44 / 69 (63.8%)</div>
+              <span class="layer-tag" style="color:var(--safe);background:var(--safe-soft)">+8 Attacks Intercepted</span>
+            </div>
+
+            <div class="layer-card">
+              <div class="layer-head">
+                <div class="layer-name"><span class="layer-title">Benign False Alarms</span></div>
+                <span class="layer-status"><span class="status-dot is-safe"></span>0.0%</span>
+              </div>
+              <div class="layer-metric" style="color:var(--safe)">0 / 30 FP</div>
+              <div class="layer-sub">95% upper bound &le; 10.0% (Rule of Three)</div>
+              <span class="layer-tag" style="color:var(--safe);background:var(--safe-soft)">Zero Noise (@ 0.72)</span>
+            </div>
+
+            <div class="layer-card">
+              <div class="layer-head">
+                <div class="layer-name"><span class="layer-title">Inference Speed</span></div>
+                <span class="layer-status"><span class="status-dot is-primary"></span>6.4 ms</span>
+              </div>
+              <div class="layer-metric" style="color:var(--accent-text)">6.4 ms / scan</div>
+              <div class="layer-sub">Runs 100% offline without GPU</div>
+              <span class="layer-tag" style="color:var(--accent-text);background:var(--accent-soft)">Real-Time</span>
+            </div>
+          </div>
+
+          <!-- Comparative Visualization Panel -->
+          <div class="lensguard-panel" style="margin-top:0;">
+            <div class="lensguard-panel-head">
+              <div>
+                <div class="section-kicker">Visual Category Breakdown</div>
+                <h2 class="section-heading">Attack Coverage by Category (At T* = 0.72)</h2>
+              </div>
+            </div>
+
+            <div class="space-y-4" style="display:flex;flex-direction:column;gap:16px;">
+              <!-- Item 1: Sneaky Prompts -->
+              <div style="background:var(--surface-raised);padding:14px;border-radius:var(--radius-control);border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-weight:600;font-size:12px;">1. Malicious Prompts (The Semantic Blindspot)</span>
+                  <span style="font-family:var(--font-mono);font-size:11px;">
+                    Rules: <span style="color:var(--critical);font-weight:600;">4 / 18 (22.2%)</span> &nbsp;→&nbsp; 
+                    LensGuard: <span style="color:var(--safe);font-weight:600;">9 / 18 (50.0%)</span>
+                  </span>
+                </div>
+                <div style="background:var(--surface-inset);height:10px;border-radius:5px;overflow:hidden;display:flex;">
+                  <div style="background:var(--critical);width:22.2%;height:100%;" title="Upstream rules caught only 22.2%"></div>
+                  <div style="background:var(--safe);width:27.8%;height:100%;" title="LensGuard ML caught an additional 27.8% (5 more prompts)"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px;">
+                  <span>Red bar: Upstream regex baseline (4 of 18)</span>
+                  <span style="color:var(--safe);">Green bar: Attacks caught by LensGuard ML Layer (9 of 18)</span>
+                </div>
+              </div>
+
+              <!-- Item 2: Obfuscated Prompts -->
+              <div style="background:var(--surface-raised);padding:14px;border-radius:var(--radius-control);border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-weight:600;font-size:12px;">2. Obfuscated Prompts (Base64, Zero-width, Leetspeak, Homoglyphs)</span>
+                  <span style="font-family:var(--font-mono);font-size:11px;">
+                    Rules: <span style="color:var(--high);font-weight:600;">12 / 18 (66.7%)</span> &nbsp;→&nbsp; 
+                    LensGuard: <span style="color:var(--safe);font-weight:600;">14 / 18 (77.8%)</span>
+                  </span>
+                </div>
+                <div style="background:var(--surface-inset);height:10px;border-radius:5px;overflow:hidden;display:flex;">
+                  <div style="background:var(--high);width:66.7%;height:100%;"></div>
+                  <div style="background:var(--safe);width:11.1%;height:100%;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px;">
+                  <span>Orange: Base unpackers (12 of 18)</span>
+                  <span style="color:var(--safe);">Green: De-obfuscated & caught by LensGuard (14 of 18)</span>
+                </div>
+              </div>
+
+              <!-- Item 3: Author Real-World Docs -->
+              <div style="background:var(--surface-raised);padding:14px;border-radius:var(--radius-control);border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-weight:600;font-size:12px;">3. Author Real-World Injections (Resumes, Footnotes, Debug Logs)</span>
+                  <span style="font-family:var(--font-mono);font-size:11px;">
+                    Rules: <span style="color:var(--high);font-weight:600;">10 / 15 (66.7%)</span> &nbsp;→&nbsp; 
+                    LensGuard: <span style="color:var(--safe);font-weight:600;">11 / 15 (73.3%)</span>
+                  </span>
+                </div>
+                <div style="background:var(--surface-inset);height:10px;border-radius:5px;overflow:hidden;display:flex;">
+                  <div style="background:var(--high);width:66.7%;height:100%;"></div>
+                  <div style="background:var(--safe);width:6.6%;height:100%;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px;">
+                  <span>Orange: Rules only (10 of 15)</span>
+                  <span style="color:var(--safe);">Green: Caught by LensGuard Full Stack (11 of 15)</span>
+                </div>
+              </div>
+
+              <!-- Item 4: Malicious Files (Forensics) -->
+              <div style="background:var(--surface-raised);padding:14px;border-radius:var(--radius-control);border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-weight:600;font-size:12px;">4. Malicious Files (PDF / DOCX Structural Attacks)</span>
+                  <span style="font-family:var(--font-mono);font-size:11px;">
+                    Rules: <span style="color:var(--safe);font-weight:600;">18 / 18 (100.0%)</span> &nbsp;→&nbsp; 
+                    LensGuard: <span style="color:var(--safe);font-weight:600;">18 / 18 (100.0%)</span>
+                  </span>
+                </div>
+                <div style="background:var(--surface-inset);height:10px;border-radius:5px;overflow:hidden;display:flex;">
+                  <div style="background:var(--safe);width:100%;height:100%;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px;">
+                  <span>White-on-white text, annotations, comments</span>
+                  <span style="color:var(--safe);">18 of 18 caught (100.0%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plain-English Presentation Card -->
+          <div class="lensguard-panel">
+            <div class="lensguard-panel-head">
+              <div>
+                <div class="section-kicker">Viva & Presentation Summary</div>
+                <h2 class="section-heading">Plain-English Explainer for Examiners</h2>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px;font-size:11.5px;line-height:1.6;">
+              <div style="background:var(--surface-raised);padding:14px;border-radius:var(--radius-control);border:1px solid var(--border);">
+                <div style="font-weight:600;color:var(--critical);margin-bottom:6px;">1. Why Heuristic Regex Alone is Insufficient</div>
+                <p style="color:var(--text-secondary);">
+                  Regex only detects literal keywords (e.g. <code>ignore instructions</code>). Attackers bypass this using roleplay or continuation framing. Upstream regex caught only <strong>4 of 18 (22.2%)</strong> subtle injection prompts.
+                </p>
+              </div>
+
+              <div style="background:var(--surface-raised);padding:14px;border-radius:var(--radius-control);border:1px solid var(--border);">
+                <div style="font-weight:600;color:var(--safe);margin-bottom:6px;">2. The Honest Trade-Off at T* = 0.72</div>
+                <p style="color:var(--text-secondary);">
+                  At the zero-false-positive operating threshold (0.72), soft-worded prompts caught rise from <strong>4 of 18 to 9 of 18</strong>, while preserving <strong>0 of 30</strong> false positives on benign documents (95% upper bound &le; 10%).
+                </p>
+              </div>
+
+              <div style="background:var(--surface-raised);padding:14px;border-radius:var(--radius-control);border:1px solid var(--border);">
+                <div style="font-weight:600;color:var(--accent-text);margin-bottom:6px;">3. Automated Near-Duplicate Check</div>
+                <p style="color:var(--text-secondary);">
+                  Near-duplicate similarity check (&ge; 80% Ratcliff/Obershelp ratio) found no overlap between training data and evaluation items. The system runs 100% locally and offline in ~6.4ms.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   </div>
@@ -587,7 +895,7 @@
 
   <noscript>
     <div
-      style="position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#090b0f;color:#e8ecf2;padding:24px;text-align:center;">
+      style="position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#FAF7F0;color:#1C1917;padding:24px;text-align:center;">
       JavaScript is required to run the scanner interface.
     </div>
   </noscript>

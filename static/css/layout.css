@@ -38,11 +38,11 @@
   flex: 0 0 28px;
   place-items: center;
   overflow: hidden;
-  color: #c7d2fe;
-  background: linear-gradient(150deg, rgba(99, 102, 241, 0.34), rgba(99, 102, 241, 0.1));
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 7px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  background: var(--accent);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
 }
 
 .brand-mark svg {
@@ -126,13 +126,13 @@
 
 .nav-item:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--surface-2);
 }
 
 .nav-item[aria-current="page"] {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.055);
-  border-color: rgba(255, 255, 255, 0.055);
+  background: var(--surface);
+  border-color: var(--border-strong);
 }
 
 .nav-item[aria-current="page"] svg {
@@ -174,7 +174,7 @@
   gap: 7px;
   margin-bottom: 12px;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-control);
 }
@@ -315,7 +315,7 @@
   min-height: 26px;
   padding: 0 9px;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 5px;
   font-family: var(--font-mono);
@@ -403,7 +403,7 @@
   min-width: 250px;
   gap: 5px;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-control);
 }
@@ -487,7 +487,7 @@
   overflow: hidden;
   padding: 14px 10px 40px 0;
   color: var(--text-faint);
-  background: rgba(255, 255, 255, 0.012);
+  background: var(--surface-inset);
   border-right: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 11px;
@@ -546,7 +546,7 @@
   padding: 28px;
   color: var(--text-secondary);
   background: var(--surface-inset);
-  border: 1px dashed rgba(255, 255, 255, 0.13);
+  border: 1px dashed var(--border-strong);
   border-radius: 7px;
   text-align: center;
   transition: border-color var(--fast) var(--ease),
@@ -617,7 +617,7 @@
   flex: 0 0 28px;
   place-items: center;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 5px;
 }
@@ -1003,7 +1003,7 @@
   height: 31px;
   padding: 0 10px;
   color: var(--text-faint);
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 8px;
@@ -1037,7 +1037,7 @@
 }
 
 .findings-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.024);
+  background: var(--surface-raised);
 }
 
 .findings-table tbody tr.is-selected {
@@ -1052,7 +1052,7 @@
 .findings-table td {
   height: 48px;
   padding: 7px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
 
@@ -1168,7 +1168,7 @@
 
 .technical-details > summary:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--surface);
 }
 
 .technical-details > summary svg {
@@ -1275,7 +1275,7 @@
 .chain-node {
   padding: 4px 7px;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 4px;
   font-family: var(--font-mono);
@@ -1332,7 +1332,7 @@
   height: 31px;
   padding: 0 12px;
   color: var(--text-faint);
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 8px;
@@ -1363,7 +1363,7 @@
 .engine-table td {
   min-height: 54px;
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  border-bottom: 1px solid var(--border);
   vertical-align: top;
 }
 
@@ -1423,7 +1423,7 @@
   margin-top: 12px;
   padding: 10px 12px;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-control);
   font-size: 9.5px;
@@ -1775,7 +1775,7 @@
   .engine-table tr {
     display: block;
     padding: 13px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+    border-bottom: 1px solid var(--border);
   }
 
   .engine-table tbody tr:last-child {
@@ -1832,7 +1832,7 @@
   .engine-table td:nth-child(6) {
     display: block;
     padding-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.045);
+    border-top: 1px solid var(--border);
   }
 
   .engine-table td:nth-child(5)::before,

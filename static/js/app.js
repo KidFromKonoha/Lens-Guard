@@ -51,6 +51,7 @@
     if (window.PIDResults) window.PIDResults.init();
     if (window.PIDScanner) window.PIDScanner.init();
     if (window.PIDEngines) window.PIDEngines.init();
+    if (window.PIDPipeline) window.PIDPipeline.init();
   }
 
   function showView(name, scroll) {
@@ -107,6 +108,7 @@
     if (els.newScanBtn) els.newScanBtn.hidden = true;
     closeEvidence();
     if (window.PIDResults) window.PIDResults.clear();
+    if (window.PIDPipeline) window.PIDPipeline.resetAll();
   }
 
   function bindNavigation() {

@@ -521,6 +521,10 @@
         });
         html += '</div>';
       }
+    } else {
+      html += '<div style="font-size:11.5px;color:var(--text-muted);background:var(--surface-inset);padding:12px;border-radius:8px;border:1px dashed var(--border);">';
+      html += 'Ready for analysis. Run a scan to view live processing telemetry and findings for this stage.';
+      html += '</div>';
     }
 
     detailEl.innerHTML = html;

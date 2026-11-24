@@ -552,6 +552,9 @@
         });
       }
       app.showResults();
+      if (window.PIDPipeline) {
+        window.PIDPipeline.animateScan(payload);
+      }
     } catch (error) {
       const message = error && error.message ? error.message : String(error);
       showScanError(message);

@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pipeline.css') }}">
   <!-- Dynamic Chart Library -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <!-- Animated Gradient Background -->
@@ -403,6 +404,28 @@
                 <p class="verdict-description" id="verdictDescription"></p>
               </div>
               <div class="verdict-meta" id="verdictMeta"></div>
+            </section>
+
+            <!-- ============================================================
+                 Interactive Detection Pipeline (n8n / ReactFlow style DAG)
+                 ============================================================ -->
+            <section class="lensguard-panel pipeline-panel" id="pipelinePanel" aria-labelledby="pipelineTitle">
+              <div class="lensguard-panel-head">
+                <div>
+                  <div class="section-kicker">Execution Workflow</div>
+                  <h2 class="section-heading" id="pipelineTitle">Interactive Detection Pipeline</h2>
+                </div>
+                <div class="status-badge" style="color:var(--safe);" id="pipelineLiveBadge">
+                  <span class="status-dot is-safe"></span>
+                  <span>Interactive Node Graph</span>
+                </div>
+              </div>
+              <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+                Visual multi-stage workflow displaying data flow across input extraction, regex heuristics, structural forensics, ML classification, semantic judge, and sanitisation. <strong>Click any node</strong> to inspect stage telemetry and findings.
+              </p>
+              <div class="pipeline-vis">
+                <div class="pipeline-graph" id="pipelineGraph"></div>
+              </div>
             </section>
 
             <section class="analysis-panel" aria-labelledby="analysisTitle">
@@ -857,6 +880,7 @@
     </div>
   </noscript>
 
+  <script src="{{ url_for('static', filename='js/pipeline.js') }}"></script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   <script src="{{ url_for('static', filename='js/results.js') }}"></script>
   <script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
